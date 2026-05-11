@@ -1,0 +1,32 @@
+<?php
+
+declare(strict_types=1);
+
+/** @var \Dlabsit\XmlFeed\Block\Analytics\OrderSuccess $block */
+$orderData = $block->getOrderData();
+$orderItems = $block->getOrderItems();
+
+if ($orderData === null) {
+    return;
+}
+?>
+<script>
+    skroutz_analytics('ecommerce', 'addOrder', {
+        order_id: '<?= $block->escapeJs($orderData['order_id']) ?>',
+        revenue: '<?= $block->escapeJs($orderData['revenue']) ?>',
+        shipping: '<?= $block->escapeJs($orderData['shipping']) ?>',
+        tax: '<?= $block->escapeJs($orderData['tax']) ?>',
+        paid_by: '<?= $block->escapeJs($orderData['paid_by']) ?>',
+        paid_by_descr: '<?= $block->escapeJs($orderData['paid_by_descr']) ?>'
+    });
+
+    <?php foreach ($orderItems as $item): ?>
+    skroutz_analytics('ecommerce', 'addItem', {
+        order_id: '<?= $block->escapeJs($item['order_id']) ?>',
+        product_id: '<?= $block->escapeJs($item['product_id']) ?>',
+        name: '<?= $block->escapeJs($item['name']) ?>',
+        price: '<?= $block->escapeJs($item['price']) ?>',
+        quantity: '<?= $block->escapeJs((string) $item['quantity']) ?>'
+    });
+    <?php endforeach; ?>
+</script>

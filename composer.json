@@ -1,0 +1,37 @@
+{
+    "name": "dlabsit/module-xml-feed",
+    "description": "Pluggable XML product feed generator for Magento 2. Supports Skroutz, Google Shopping, Facebook Catalog, Bing, Bestprice.gr, Pricerunner, Idealo, Ceneo.pl, Kelkoo, Shopflix.gr, and eMAG Marketplace.",
+    "type": "magento2-module",
+    "license": "OSL-3.0",
+    "version": "2.2.0",
+    "require": {
+        "php": ">=8.2",
+        "dlabsit/module-core": ">=1.0.0",
+        "magento/framework": ">=103.0.0",
+        "magento/module-catalog": ">=104.0.0",
+        "magento/module-store": ">=101.0.0",
+        "magento/module-checkout": ">=100.4.0",
+        "magento/module-sales": ">=103.0.0",
+        "magento/module-eav": ">=102.0.0",
+        "magento/module-cron": ">=100.4.0",
+        "magento/module-catalog-inventory": ">=100.4.0",
+        "magento/module-configurable-product": ">=100.4.0"
+    },
+    "require-dev": {
+        "magento/magento-coding-standard": "^32",
+        "phpstan/phpstan": "^1.11",
+        "bitexpert/phpstan-magento": "^0.33"
+    },
+    "autoload": {
+        "files": ["registration.php"],
+        "psr-4": {
+            "Dlabsit\\XmlFeed\\": ""
+        }
+    },
+    "scripts": {
+        "lint": "phpcs --standard=Magento2 --severity=8 --extensions=php,phtml .",
+        "phpstan": "phpstan analyse --memory-limit=512M",
+        "ci": ["@lint", "@phpstan"]
+    },
+    "keywords": ["magento", "magento2", "xml-feed", "skroutz", "google-shopping", "facebook-catalog", "bing-shopping", "bestprice", "pricerunner", "idealo", "ceneo", "kelkoo"]
+}

@@ -1,0 +1,27 @@
+{
+    "dlabsit_xmlfeed_feed": {
+        "column": {
+            "feed_id": true,
+            "slug": true,
+            "channel_code": true,
+            "store_id": true,
+            "is_active": true,
+            "name": true,
+            "filename": true,
+            "filter_mode": true,
+            "category_ids": true,
+            "channel_settings": true,
+            "sort_order": true,
+            "created_at": true,
+            "updated_at": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "DLABSIT_XMLFEED_FEED_SLUG_STORE_ID": true
+        },
+        "index": {
+            "DLABSIT_XMLFEED_FEED_CHANNEL_CODE_IS_ACTIVE": true,
+            "DLABSIT_XMLFEED_FEED_STORE_ID": true
+        }
+    }
+}

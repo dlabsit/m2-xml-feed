@@ -1,0 +1,27 @@
+parameters:
+    level: 3
+    paths:
+        - Api
+        - App
+        - Block
+        - Console
+        - Controller
+        - Cron
+        - Helper
+        - Logger
+        - Model
+        - Observer
+        - Plugin
+        - Setup
+    excludePaths:
+        - vendor
+        - generated
+        - var
+        - .git
+    ignoreErrors:
+        # Magento magic getters/setters via __call
+        - '#Call to an undefined method Magento\\Framework\\Model\\AbstractModel::#'
+        - '#Call to an undefined method Magento\\Framework\\DataObject::#'
+includes:
+    - phpstan-baseline.neon
+    - vendor/bitexpert/phpstan-magento/extension.neon

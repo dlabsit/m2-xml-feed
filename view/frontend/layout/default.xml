@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!--
+    Magento layout XSD only allows title|css|link|meta|script|remove|attribute|font
+    directly under <head>. To inject a custom block into <head>, target the
+    "head.additional" container which Magento renders inside the <head> HTML.
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceContainer name="head.additional">
+            <block class="Dlabsit\XmlFeed\Block\Analytics\Tracking"
+                   name="xmlfeed.analytics.tracking"
+                   template="Dlabsit_XmlFeed::analytics/tracking.phtml"/>
+        </referenceContainer>
+    </body>
+</page>

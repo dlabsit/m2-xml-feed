@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="Dlabsit\XmlFeed\Api\FeedGeneratorInterface"
+                type="Dlabsit\XmlFeed\Model\Feed\Generator"/>
+    <preference for="Dlabsit\XmlFeed\Api\FeedRepositoryInterface"
+                type="Dlabsit\XmlFeed\Model\FeedRepository"/>
+    <preference for="Dlabsit\XmlFeed\Api\Data\FeedInterface"
+                type="Dlabsit\XmlFeed\Model\Feed"/>
+
+    <virtualType name="Dlabsit\XmlFeed\Model\Api\FeedSearchResults"
+                 type="Magento\Framework\Api\SearchResults"/>
+    <preference for="Dlabsit\XmlFeed\Api\Data\FeedSearchResultsInterface"
+                type="Dlabsit\XmlFeed\Model\Api\FeedSearchResults"/>
+
+    <type name="Dlabsit\XmlFeed\Logger\Handler">
+        <arguments>
+            <argument name="filesystem" xsi:type="object">Magento\Framework\Filesystem\Driver\File</argument>
+        </arguments>
+    </type>
+
+    <type name="Dlabsit\XmlFeed\Logger\Logger">
+        <arguments>
+            <argument name="name" xsi:type="string">xml_feed</argument>
+            <argument name="handlers" xsi:type="array">
+                <item name="system" xsi:type="object">Dlabsit\XmlFeed\Logger\Handler</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <!-- Register all feed writers in the pool -->
+    <type name="Dlabsit\XmlFeed\Model\Feed\WriterPool">
+        <arguments>
+            <argument name="writers" xsi:type="array">
+                <item name="skroutz" xsi:type="object">Dlabsit\XmlFeed\Model\Feed\Writer\SkroutzWriter</item>
+                <item name="google" xsi:type="object">Dlabsit\XmlFeed\Model\Feed\Writer\GoogleShoppingWriter</item>
+                <item name="facebook" xsi:type="object">Dlabsit\XmlFeed\Model\Feed\Writer\FacebookCatalogWriter</item>
+                <item name="bing" xsi:type="object">Dlabsit\XmlFeed\Model\Feed\Writer\BingShoppingWriter</item>
+                <item name="bestprice" xsi:type="object">Dlabsit\XmlFeed\Model\Feed\Writer\BestpriceWriter</item>
+                <item name="pricerunner" xsi:type="object">Dlabsit\XmlFeed\Model\Feed\Writer\PricerunnerWriter</item>
+                <item name="idealo" xsi:type="object">Dlabsit\XmlFeed\Model\Feed\Writer\IdealoWriter</item>
+                <item name="ceneo" xsi:type="object">Dlabsit\XmlFeed\Model\Feed\Writer\CeneoWriter</item>
+                <item name="kelkoo" xsi:type="object">Dlabsit\XmlFeed\Model\Feed\Writer\KelkooWriter</item>
+                <item name="shopflix" xsi:type="object">Dlabsit\XmlFeed\Model\Feed\Writer\ShopflixWriter</item>
+                <item name="emag" xsi:type="object">Dlabsit\XmlFeed\Model\Feed\Writer\EmagWriter</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <!-- Register this module with Dlabsit_Core so it appears on the Dlabsit Dashboard -->
+    <type name="Dlabsit\Core\Model\ModuleRegistry">
+        <arguments>
+            <argument name="modules" xsi:type="array">
+                <item name="xmlfeed" xsi:type="array">
+                    <item name="code" xsi:type="string">xmlfeed</item>
+                    <item name="name" xsi:type="string">XML Feed (11 platforms)</item>
+                    <item name="description" xsi:type="string">Pluggable XML product feed generator. Supports Skroutz, Google Shopping, Facebook/Meta Catalog, Bing, Bestprice.gr, Pricerunner, Idealo, Ceneo.pl, Kelkoo, Shopflix.gr, and eMAG Marketplace.</item>
+                    <item name="version" xsi:type="string">2.2.0</item>
+                    <item name="composer_name" xsi:type="string">dlabsit/module-xml-feed</item>
+                    <item name="license_tier" xsi:type="string">free_os_paid_commerce</item>
+                    <item name="min_php_version" xsi:type="string">8.2</item>
+                    <item name="min_magento_version" xsi:type="string">2.4.7</item>
+                    <item name="repository_url" xsi:type="string">https://github.com/dlabsit/m2-xml-feed</item>
+                    <item name="documentation_url" xsi:type="string">https://github.com/dlabsit/m2-xml-feed#readme</item>
+                    <item name="config_section" xsi:type="string">xmlfeed</item>
+                </item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="Magento\Framework\Console\CommandListInterface">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="xmlfeed_generate" xsi:type="object">Dlabsit\XmlFeed\Console\Command\GenerateFeedCommand</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <!-- Dynamic /feed/<slug> router; runs AFTER standard router so explicit
+         frontend controllers (like /feed/dynamic) still win. -->
+    <type name="Magento\Framework\App\RouterList">
+        <arguments>
+            <argument name="routerList" xsi:type="array">
+                <item name="dlabsit_xmlfeed_feed_slug" xsi:type="array">
+                    <item name="class" xsi:type="string">Dlabsit\XmlFeed\App\Router</item>
+                    <item name="disable" xsi:type="boolean">false</item>
+                    <item name="sortOrder" xsi:type="string">31</item>
+                </item>
+            </argument>
+        </arguments>
+    </type>
+</config>

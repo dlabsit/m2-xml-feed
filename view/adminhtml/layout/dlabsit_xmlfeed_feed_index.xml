@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <update handle="styles"/>
+    <body>
+        <referenceContainer name="content">
+            <block class="Dlabsit\XmlFeed\Block\Adminhtml\Feed" name="dlabsit_xmlfeed_feed"/>
+            <block class="Magento\Backend\Block\Template"
+                   name="dlabsit_xmlfeed_feed_generate_ajax"
+                   template="Dlabsit_XmlFeed::feed/generate_ajax.phtml"/>
+        </referenceContainer>
+    </body>
+</page>

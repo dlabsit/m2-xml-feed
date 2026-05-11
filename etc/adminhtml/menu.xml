@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <!-- Nest under the "Dlabsit" top-level menu that Dlabsit_Core already provides -->
+        <add id="Dlabsit_XmlFeed::feed"
+             title="XML Feed"
+             module="Dlabsit_XmlFeed"
+             sortOrder="40"
+             parent="Dlabsit_Core::dlabsit"
+             action="dlabsit_xmlfeed/feed/index"
+             resource="Dlabsit_XmlFeed::feed"/>
+    </menu>
+</config>

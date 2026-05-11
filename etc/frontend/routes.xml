@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:App/etc/routes.xsd">
+    <router id="standard">
+        <!--
+            /feed/<slug> is intercepted by Dlabsit\XmlFeed\App\Router and mapped
+            to Controller\Feed\Dynamic. We still declare the frontName here
+            so Magento knows the route belongs to this module for URL
+            generation (e.g. $this->getUrl('xmlfeed/...')).
+        -->
+        <route id="xmlfeed" frontName="feed">
+            <module name="Dlabsit_XmlFeed"/>
+        </route>
+    </router>
+</config>

@@ -1,0 +1,94 @@
+<?php
+/**
+ * @var \Magento\Backend\Block\Template $block
+ */
+$formKey = $block->escapeHtmlAttr($block->getFormKey());
+?>
+<script>
+require(['jquery', 'mage/translate'], function ($) {
+    'use strict';
+
+    function showLoader(message) {
+        var $mask = $('<div class="dlabsit-generate-overlay"></div>');
+        var $msg = $('<div class="dlabsit-generate-msg"></div>').text(message || 'Working…');
+        $mask.append($msg);
+        $('body').append($mask);
+        return $mask;
+    }
+
+    function toast(kind, text) {
+        var $wrap = $('#messages');
+        if (!$wrap.length) {
+            $wrap = $('<div id="messages"></div>').prependTo('#maincontent');
+        }
+        var klass = kind === 'error' ? 'message-error error' : 'message-success success';
+        var $m = $('<div class="message ' + klass + '"><div>' + $('<div>').text(text).html() + '</div></div>');
+        $wrap.append($m);
+        setTimeout(function () {
+            $m.fadeOut(400, function () { $(this).remove(); });
+        }, 6000);
+        $('html, body').animate({ scrollTop: 0 }, 200);
+    }
+
+    $(document).on('click', 'a[href*="/feed/generate/feed_id/"], a[href*="/dlabsit_xmlfeed/feed/generate"]', function (e) {
+        var $link = $(this);
+        var url = $link.attr('href');
+        if (!url) { return; }
+        e.preventDefault();
+        e.stopPropagation();
+
+        var $mask = showLoader($.mage.__('Generating feed, please wait…'));
+
+        $.ajax({
+            url: url,
+            type: 'POST',
+            dataType: 'json',
+            headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+            data: { form_key: '<?= /* @noEscape */ $formKey ?>' }
+        }).done(function (data) {
+            if (data && data.success) {
+                toast('success', data.message || $.mage.__('Feed generated.'));
+            } else {
+                toast('error', (data && data.message) || $.mage.__('Feed generation failed.'));
+            }
+        }).fail(function (xhr) {
+            toast('error', $.mage.__('Request failed: ') + xhr.status + ' ' + xhr.statusText);
+        }).always(function () {
+            $mask.remove();
+        });
+    });
+});
+</script>
+<style>
+.dlabsit-generate-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(30, 30, 30, 0.55);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.dlabsit-generate-msg {
+    background: #fff;
+    color: #222;
+    padding: 20px 30px;
+    border-radius: 4px;
+    font-weight: 600;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, .2);
+    min-width: 260px;
+    text-align: center;
+}
+.dlabsit-generate-msg::before {
+    content: '';
+    display: inline-block;
+    width: 18px; height: 18px;
+    border: 3px solid #ccc;
+    border-top-color: #1979c3;
+    border-radius: 50%;
+    vertical-align: -4px;
+    margin-right: 10px;
+    animation: dlabsitspin 0.9s linear infinite;
+}
+@keyframes dlabsitspin { to { transform: rotate(360deg); } }
+</style>

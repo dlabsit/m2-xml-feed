@@ -1,0 +1,106 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <!--
+            One tab per Dlabsit module: "Dlabsit - XML Feed" groups all 9 platform
+            sections under its own tab in Stores -> Configuration.
+        -->
+        <tab id="dlabsit_xmlfeed" translate="label" sortOrder="400">
+            <label>Dlabsit - XML Feed</label>
+        </tab>
+
+        <!-- General + shared -->
+        <section id="xmlfeed" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+            <class>separator-top</class>
+            <label>General &amp; Shared Settings</label>
+            <tab>dlabsit_xmlfeed</tab>
+            <resource>Dlabsit_XmlFeed::config</resource>
+
+            <group id="dlabsit_info" translate="label" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Module Info</label>
+                <field id="dlabsit_banner" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <frontend_model>Dlabsit\XmlFeed\Block\Adminhtml\System\Config\InfoBanner</frontend_model>
+                </field>
+            </group>
+
+            <group id="general" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>General</label>
+                <field id="cron_schedule" translate="label comment" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Cron Schedule (all feeds)</label>
+                    <comment>Default: 0 */2 * * * (every 2 hours)</comment>
+                </field>
+            </group>
+
+            <group id="shared" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Shared Settings (all feeds)</label>
+                <field id="unique_id_source" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Unique ID Source</label>
+                    <source_model>Dlabsit\XmlFeed\Model\Config\Source\UniqueIdSource</source_model>
+                    <comment>Used as id/productId/g:id across all feeds</comment>
+                </field>
+                <field id="custom_attribute_code" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Custom Attribute Code</label>
+                    <depends>
+                        <field id="unique_id_source">custom</field>
+                    </depends>
+                </field>
+                <field id="manufacturer_attribute" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Manufacturer / Brand Attribute</label>
+                    <source_model>Dlabsit\XmlFeed\Model\Config\Source\ProductAttributes</source_model>
+                </field>
+                <field id="mpn_attribute" translate="label" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>MPN Attribute</label>
+                    <source_model>Dlabsit\XmlFeed\Model\Config\Source\ProductAttributes</source_model>
+                </field>
+                <field id="ean_attribute" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>EAN / GTIN Attribute</label>
+                    <source_model>Dlabsit\XmlFeed\Model\Config\Source\ProductAttributes</source_model>
+                </field>
+                <field id="color_attribute" translate="label" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Color Attribute</label>
+                    <source_model>Dlabsit\XmlFeed\Model\Config\Source\ProductAttributes</source_model>
+                </field>
+                <field id="size_attribute" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Size Attribute</label>
+                    <source_model>Dlabsit\XmlFeed\Model\Config\Source\ProductAttributes</source_model>
+                </field>
+                <field id="weight_attribute" translate="label" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Weight Attribute</label>
+                    <source_model>Dlabsit\XmlFeed\Model\Config\Source\ProductAttributes</source_model>
+                </field>
+                <field id="description_source" translate="label" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Description Source</label>
+                    <source_model>Dlabsit\XmlFeed\Model\Config\Source\DescriptionSource</source_model>
+                </field>
+                <field id="filter_mode" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Category Filter Mode</label>
+                    <source_model>Dlabsit\XmlFeed\Model\Config\Source\FilterMode</source_model>
+                </field>
+                <field id="categories" translate="label" type="multiselect" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Categories</label>
+                    <source_model>Magento\Catalog\Model\Config\Source\Category</source_model>
+                    <depends>
+                        <field id="filter_mode" negative="1">all</field>
+                    </depends>
+                </field>
+                <field id="include_out_of_stock" translate="label" type="select" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Include Out of Stock</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="batch_size" translate="label" type="text" sortOrder="130" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Batch Size</label>
+                    <validate>validate-digits</validate>
+                </field>
+                <field id="vat_rate" translate="label" type="text" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Default VAT Rate (%)</label>
+                    <validate>validate-number</validate>
+                </field>
+                <field id="enable_gzip" translate="label" type="select" sortOrder="150" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable Gzip (&gt; 10 MB)</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>
