@@ -1,6 +1,13 @@
 <div align="center">
 
-# Dlabsit XML Feed for Magento 2
+<a href="https://dlabsit.nl">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset=".github/assets/logo-dark.svg">
+    <img alt="d-labs it" src=".github/assets/logo-light.svg" width="220">
+  </picture>
+</a>
+
+# XML Feed for Magento 2
 
 **Pluggable product feed generator for 11 marketplaces and price-comparison engines.**
 One module, one feed registry, one extension point to add more.
