@@ -80,80 +80,83 @@ class IdealoWriter extends AbstractWriter
     private function writeRow(Product $product, int $storeId, ?Product $parent): void
     {
         $this->xml->startElement('product');
+        try {
 
-        // Required fields
-        $this->writeCdata('sku', $this->mapper->getUniqueId($product, $storeId));
+            // Required fields
+            $this->writeCdata('sku', $this->mapper->getUniqueId($product, $storeId));
 
-        $brand = $this->mapper->getManufacturer($product, $storeId);
-        $this->writeCdata('brand', $brand);
+            $brand = $this->mapper->getManufacturer($product, $storeId);
+            $this->writeCdata('brand', $brand);
 
-        $title = $parent
-            ? $this->mapper->getName($parent) . ' ' . trim($this->decorateVariant($product, $storeId))
-            : $this->mapper->getName($product);
-        $this->writeCdata('title', trim($title));
+            $title = $parent
+                ? $this->mapper->getName($parent) . ' ' . trim($this->decorateVariant($product, $storeId))
+                : $this->mapper->getName($product);
+            $this->writeCdata('title', trim($title));
 
-        $url = $parent ? $this->mapper->getUrl($parent) : $this->mapper->getUrl($product);
-        $this->writeCdata('url', $url);
+            $url = $parent ? $this->mapper->getUrl($parent) : $this->mapper->getUrl($product);
+            $this->writeCdata('url', $url);
 
-        $this->writeElement('price', number_format($this->mapper->getPrice($product), 2, '.', ''));
+            $this->writeElement('price', number_format($this->mapper->getPrice($product), 2, '.', ''));
 
-        $delivery = $this->config->getFeedOption($this->getCode(), 'general/delivery', $storeId) ?: '1-3 days';
-        $this->writeCdata('delivery', $delivery);
+            $delivery = $this->config->getFeedOption($this->getCode(), 'general/delivery', $storeId) ?: '1-3 days';
+            $this->writeCdata('delivery', $delivery);
 
-        $deliveryCost = $this->config->getFeedOption($this->getCode(), 'delivery_costs/dhl', $storeId) ?: '0.00';
-        $this->writeElement('deliveryCosts_DHL', number_format((float) $deliveryCost, 2, '.', ''));
+            $deliveryCost = $this->config->getFeedOption($this->getCode(), 'delivery_costs/dhl', $storeId) ?: '0.00';
+            $this->writeElement('deliveryCosts_DHL', number_format((float) $deliveryCost, 2, '.', ''));
 
-        $paymentCost = $this->config->getFeedOption($this->getCode(), 'payment_costs/prepayment', $storeId) ?: '0.00';
-        $this->writeElement('paymentCosts_Prepayment', number_format((float) $paymentCost, 2, '.', ''));
+            $paymentCost = $this->config->getFeedOption($this->getCode(), 'payment_costs/prepayment', $storeId) ?: '0.00';
+            $this->writeElement('paymentCosts_Prepayment', number_format((float) $paymentCost, 2, '.', ''));
 
-        // Optional fields
-        $description = $this->mapper->getDescription($product, $storeId, 4000);
-        if ($description !== '') {
-            $this->writeCdata('description', $description);
+            // Optional fields
+            $description = $this->mapper->getDescription($product, $storeId, 4000);
+            if ($description !== '') {
+                $this->writeCdata('description', $description);
+            }
+
+            // Multiple image URLs, semicolon-separated (Idealo convention)
+            $images = [];
+            $main = $this->mapper->getImageUrl($product) ?: ($parent ? $this->mapper->getImageUrl($parent) : '');
+            if ($main !== '') {
+                $images[] = $main;
+            }
+            foreach ($this->mapper->getAdditionalImages($product, 4) as $img) {
+                $images[] = $img;
+            }
+            if (!empty($images)) {
+                $this->writeCdata('imageUrls', implode(';', $images));
+            }
+
+            $ean = $this->mapper->getEan($product, $storeId);
+            if ($ean !== '') {
+                $this->writeElement('eans', $ean);
+            }
+
+            $mpn = $this->mapper->getMpn($product, $storeId);
+            if ($mpn !== '') {
+                $this->writeCdata('hans', $mpn);
+            }
+
+            $category = $this->mapper->getCategoryPath($product, $storeId, ' > ');
+            if ($category !== '') {
+                $this->writeCdata('categoryPath', $category);
+            }
+
+            $condition = $this->config->getFeedOption($this->getCode(), 'general/condition', $storeId) ?: 'Neu';
+            $this->writeCdata('condition', $condition);
+
+            $color = $this->mapper->getColor($product, $storeId);
+            if ($color !== '') {
+                $this->writeCdata('color', $color);
+            }
+
+            $size = $this->mapper->getSize($product, $storeId);
+            if ($size !== '') {
+                $this->writeCdata('size', $size);
+            }
+
+        } finally {
+            $this->xml->endElement();
         }
-
-        // Multiple image URLs, semicolon-separated (Idealo convention)
-        $images = [];
-        $main = $this->mapper->getImageUrl($product) ?: ($parent ? $this->mapper->getImageUrl($parent) : '');
-        if ($main !== '') {
-            $images[] = $main;
-        }
-        foreach ($this->mapper->getAdditionalImages($product, 4) as $img) {
-            $images[] = $img;
-        }
-        if (!empty($images)) {
-            $this->writeCdata('imageUrls', implode(';', $images));
-        }
-
-        $ean = $this->mapper->getEan($product, $storeId);
-        if ($ean !== '') {
-            $this->writeElement('eans', $ean);
-        }
-
-        $mpn = $this->mapper->getMpn($product, $storeId);
-        if ($mpn !== '') {
-            $this->writeCdata('hans', $mpn);
-        }
-
-        $category = $this->mapper->getCategoryPath($product, $storeId, ' > ');
-        if ($category !== '') {
-            $this->writeCdata('categoryPath', $category);
-        }
-
-        $condition = $this->config->getFeedOption($this->getCode(), 'general/condition', $storeId) ?: 'Neu';
-        $this->writeCdata('condition', $condition);
-
-        $color = $this->mapper->getColor($product, $storeId);
-        if ($color !== '') {
-            $this->writeCdata('color', $color);
-        }
-
-        $size = $this->mapper->getSize($product, $storeId);
-        if ($size !== '') {
-            $this->writeCdata('size', $size);
-        }
-
-        $this->xml->endElement();
     }
 
     private function decorateVariant(Product $variant, int $storeId): string
