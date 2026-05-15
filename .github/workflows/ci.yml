@@ -34,13 +34,17 @@ jobs:
         run: composer validate --no-check-publish
 
       - name: PHP syntax check
-        run: find . -path ./vendor -prune -o -name "*.php" -print0 | xargs -0 -n1 -P4 php -l > /dev/null
+        run: |
+          find . -path ./vendor -prune -o -name "*.php" -print0 | xargs -0 -n1 -P4 php -l > /dev/null
 
       - name: Allow phpcs composer plugin
-        run: composer global config --no-plugins allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
+        run: |
+          composer global config --no-plugins allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
 
       - name: Install Magento Coding Standard
-        run: composer global require --no-progress --no-interaction magento/magento-coding-standard:^32
+        run: |
+          composer global require --no-progress --no-interaction magento/magento-coding-standard:^32
 
       - name: Run phpcs (Magento Coding Standard)
-        run: "$HOME/.composer/vendor/bin/phpcs" --standard=Magento2 --severity=8 --extensions=php,phtml -q .
+        run: |
+          "$HOME/.composer/vendor/bin/phpcs" --standard=Magento2 --severity=8 --extensions=php,phtml -q .
