@@ -16,10 +16,18 @@ One module, one feed registry, one extension point to add more.
 [![PHP](https://img.shields.io/badge/PHP-8.2%2B-777BB4?style=flat-square&logo=php&logoColor=white)](composer.json)
 [![Magento](https://img.shields.io/badge/Magento-2.4.7%20%7C%202.4.8-EE672F?style=flat-square&logo=magento&logoColor=white)](https://github.com/magento/magento2)
 [![License: FSL-1.1-MIT](https://img.shields.io/badge/license-FSL--1.1--MIT-blue.svg?style=flat-square)](LICENSE.md)
+[![Status: pre-release](https://img.shields.io/badge/status-pre--release-yellow?style=flat-square)](#status)
 
 </div>
 
 ---
+
+> [!WARNING]
+> **Pre-release software — not thoroughly tested.**
+>
+> This module has not yet been validated against a wide range of Magento installs, catalog shapes, or production traffic. Generated feed output has not been independently verified against every platform's spec.
+>
+> Do **not** rely on it as the sole feed source for a production store without your own testing first. Verify each generated feed against the target platform's validator before going live, monitor it on the first few cron runs, and keep your previous feed solution as a fallback during evaluation. Bug reports through [GitHub Issues](https://github.com/dlabsit/m2-xml-feed/issues) are very welcome.
 
 ## Table of contents
 
