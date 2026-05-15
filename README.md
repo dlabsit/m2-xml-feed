@@ -8,7 +8,7 @@ One module, 11 supported channels, one interface to add more.
 [![Latest Version](https://img.shields.io/packagist/v/dlabsit/module-xml-feed?style=flat-square)](https://packagist.org/packages/dlabsit/module-xml-feed)
 [![PHP](https://img.shields.io/packagist/php-v/dlabsit/module-xml-feed?style=flat-square)](composer.json)
 [![Magento](https://img.shields.io/badge/Magento-2.4.7%20%7C%202.4.8-orange?style=flat-square)](https://github.com/magento/magento2)
-[![License: OSL-3.0](https://img.shields.io/badge/license-OSL--3.0-blue.svg?style=flat-square)](LICENSE.md)
+[![License: FSL-1.1-MIT](https://img.shields.io/badge/license-FSL--1.1--MIT-blue.svg?style=flat-square)](LICENSE.md)
 
 </div>
 
@@ -80,4 +80,9 @@ Bugs & feature requests: [GitHub Issues](https://github.com/dlabsit/m2-xml-feed/
 
 ## License
 
-[Open Software License v3.0](LICENSE.md) © Dlabsit
+[Functional Source License v1.1 with MIT Future License](LICENSE.md) (FSL-1.1-MIT) © Dlabsit
+
+Free to use, including commercially, on any Magento store you operate. Modify
+for your own use. No resale, no SaaS-as-a-product, no rebranding-and-selling.
+Each release becomes MIT licensed two years after its publication date (DOSP).
+See [LICENSE.md](LICENSE.md) for full terms.

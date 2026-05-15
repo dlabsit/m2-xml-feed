@@ -1,7 +1,7 @@
 <?php
 /**
  * @copyright Copyright (c) 2026 Dlabsit
- * @license   OSL-3.0
+ * @license   FSL-1.1-MIT
  */
 
 declare(strict_types=1);

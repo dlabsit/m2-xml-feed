@@ -8,7 +8,7 @@
  * @category   Dlabsit
  * @package    Dlabsit_XmlFeed
  * @copyright  Copyright (c) 2026 Dlabsit (https://github.com/dlabsit)
- * @license    Open Software License ("OSL") v. 3.0 — https://opensource.org/licenses/OSL-3.0
+ * @license    FSL-1.1-MIT (Functional Source License) - https://fsl.software
  */
 
 declare(strict_types=1);
