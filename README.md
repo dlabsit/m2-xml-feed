@@ -51,7 +51,7 @@ One module, one feed registry, one extension point to add more.
 
 ## What it does
 
-Turns your Magento 2 catalog into XML feeds that marketplaces and price-comparison sites can consume. The module ships writers for 11 platforms and a registry-driven setup so a single store can run multiple feeds per channel (for example: one Google feed for adults, one for kids, each filtered to a different category tree).
+Turns your Magento 2 catalog into XML feeds that marketplaces and price-comparison sites can consume. The module ships writers for 11 platforms and a registry-driven setup so a single store can run multiple feeds per channel (for example: one Google feed for accessories, one for apparel, each filtered to a different category tree).
 
 It is built around a streaming `XMLWriter`, so feed size is bounded only by disk space, not by PHP memory.
 
@@ -118,13 +118,13 @@ Setup patches will:
 1. Open **Stores → Configuration → Dlabsit - XML Feed** and set shared defaults (manufacturer attribute, EAN attribute, VAT rate, etc.).
 2. Open **Catalog → XML Feeds** in the admin menu and add a feed:
    - Pick a channel (e.g. Google Shopping).
-   - Give it a slug (e.g. `google-adult`).
+   - Give it a slug (e.g. `google-main`).
    - Set the store view, filename, and category include/exclude rules.
 3. Generate it once from the admin grid or via CLI:
    ```bash
-   bin/magento xml-feed:generate --slug=google-adult
+   bin/magento xml-feed:generate --slug=google-main
    ```
-4. The file is now at `pub/media/xmlfeed/google-adult.xml` and served at `https://yourstore.com/feed/google-adult`.
+4. The file is now at `pub/media/xmlfeed/google-main.xml` and served at `https://yourstore.com/feed/google-main`.
 
 ## Configuration
 
@@ -164,7 +164,7 @@ See `etc/config.xml` for the full default schema.
 
 ```bash
 # Generate one feed by slug
-bin/magento xml-feed:generate --slug=google-adult
+bin/magento xml-feed:generate --slug=google-main
 
 # Generate every active feed in the registry
 bin/magento xml-feed:generate --all
