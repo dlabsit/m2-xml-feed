@@ -4,17 +4,17 @@
     "type": "magento2-module",
     "license": "FSL-1.1-MIT",
     "require": {
-        "php": ">=8.2",
-        "dlabsit/module-core": ">=1.0.0",
-        "magento/framework": ">=103.0.0",
-        "magento/module-catalog": ">=104.0.0",
-        "magento/module-store": ">=101.0.0",
-        "magento/module-checkout": ">=100.4.0",
-        "magento/module-sales": ">=103.0.0",
-        "magento/module-eav": ">=102.0.0",
-        "magento/module-cron": ">=100.4.0",
-        "magento/module-catalog-inventory": ">=100.4.0",
-        "magento/module-configurable-product": ">=100.4.0"
+        "php": "~8.2.0 || ~8.3.0",
+        "dlabsit/module-core": "^1.0",
+        "magento/framework": ">=103.0 <106",
+        "magento/module-catalog": ">=104.0 <107",
+        "magento/module-store": ">=101.0 <104",
+        "magento/module-checkout": ">=100.4 <103",
+        "magento/module-sales": ">=103.0 <106",
+        "magento/module-eav": ">=102.0 <105",
+        "magento/module-cron": ">=100.4 <103",
+        "magento/module-catalog-inventory": ">=100.4 <103",
+        "magento/module-configurable-product": ">=100.4 <103"
     },
     "require-dev": {
         "magento/magento-coding-standard": "^32",
