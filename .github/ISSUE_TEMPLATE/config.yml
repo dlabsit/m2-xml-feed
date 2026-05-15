@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/dlabsit/m2-xml-feed/security/advisories/new
+    about: Report security issues privately. Do not open public issues for them.
+  - name: Commercial support / Magento services
+    url: https://dlabsit.nl
+    about: Need paid help, custom development, or hosting? Get in touch with Dlabsit.

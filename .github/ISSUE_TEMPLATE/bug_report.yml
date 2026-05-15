@@ -1,0 +1,89 @@
+name: Bug report
+description: Report a defect in feed generation or module behavior
+title: "[Bug] "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to file a bug report. Please fill out the sections below — well-scoped reports get fixed faster.
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: One or two sentences describing the bug.
+      placeholder: "Skroutz feed emits products with empty <category> for store view 2."
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Minimal steps that produce the bug on a fresh Magento install.
+      placeholder: |
+        1. Install Dlabsit_Core 0.1 and Dlabsit_XmlFeed 0.1
+        2. Configure a Skroutz feed with slug "skroutz-default" on store 2
+        3. Run `bin/magento xml-feed:generate --slug=skroutz-default`
+        4. Observe ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: Include relevant excerpts of the generated XML if useful, plus errors from `var/log/xmlfeed.log` and `var/log/exception.log`.
+    validations:
+      required: true
+
+  - type: input
+    id: module-version
+    attributes:
+      label: Module version
+      placeholder: "0.1.0"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: magento-edition
+    attributes:
+      label: Magento edition
+      options:
+        - Open Source
+        - Commerce
+        - Commerce Cloud
+    validations:
+      required: true
+
+  - type: input
+    id: magento-version
+    attributes:
+      label: Magento version
+      placeholder: "2.4.7-p3"
+    validations:
+      required: true
+
+  - type: input
+    id: php-version
+    attributes:
+      label: PHP version
+      placeholder: "8.2.20"
+    validations:
+      required: true
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: Additional context
+      description: Catalog size, other relevant modules, anything that might matter.
+    validations:
+      required: false
