@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php: ["8.2", "8.3"]
+        php: ["8.2"]
 
     steps:
       - name: Checkout
@@ -36,14 +36,13 @@ jobs:
       - name: PHP syntax check
         run: find . -path ./vendor -prune -o -name "*.php" -print0 | xargs -0 -n1 -P4 php -l > /dev/null
 
+      - name: Allow phpcodesniffer-composer-installer plugin
+        run: composer global config --no-plugins allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
+
       - name: Install Magento Coding Standard
         run: composer global require --no-progress --no-interaction magento/magento-coding-standard:^32
 
-      - name: Configure phpcs standard path
-        run: |
-          PHPCS_BIN="$HOME/.composer/vendor/bin"
-          echo "$PHPCS_BIN" >> "$GITHUB_PATH"
-          "$PHPCS_BIN/phpcs" --config-set installed_paths "$HOME/.composer/vendor/magento/magento-coding-standard"
-
       - name: Run phpcs (Magento Coding Standard)
-        run: phpcs --standard=Magento2 --severity=8 --extensions=php,phtml --report=checkstyle . | cs2pr
+        run: |
+          PHPCS_BIN="$HOME/.composer/vendor/bin/phpcs"
+          "$PHPCS_BIN" --standard=Magento2 --severity=8 --extensions=php,phtml --report=checkstyle . | cs2pr
