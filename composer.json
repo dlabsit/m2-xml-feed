@@ -3,7 +3,6 @@
     "description": "Pluggable XML product feed generator for Magento 2. Supports Skroutz, Google Shopping, Facebook Catalog, Bing, Bestprice.gr, Pricerunner, Idealo, Ceneo.pl, Kelkoo, Shopflix.gr, and eMAG Marketplace.",
     "type": "magento2-module",
     "license": "FSL-1.1-MIT",
-    "version": "2.2.0",
     "require": {
         "php": ">=8.2",
         "dlabsit/module-core": ">=1.0.0",
