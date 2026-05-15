@@ -89,86 +89,89 @@ class EmagWriter extends AbstractWriter
         }
 
         $this->xml->startElement('PRODUCT');
+        try {
 
-        $this->writeElement('PRODUCT_ID', $id);
-        $this->writeElement('PRODUCT_NUMBER', (string) $product->getSku());
+            $this->writeElement('PRODUCT_ID', $id);
+            $this->writeElement('PRODUCT_NUMBER', (string) $product->getSku());
 
-        $name = $this->mapper->getName($product);
-        if ($parent) {
-            $color = $this->mapper->getColor($product, $storeId);
-            $size = $this->mapper->getSize($product, $storeId);
-            $extras = array_filter([$color, $size]);
-            if (!empty($extras)) {
-                // eMAG wants the variant parameters in the NAME, comma-separated.
-                $name = $this->mapper->getName($parent) . ', ' . implode(', ', $extras);
+            $name = $this->mapper->getName($product);
+            if ($parent) {
+                $color = $this->mapper->getColor($product, $storeId);
+                $size = $this->mapper->getSize($product, $storeId);
+                $extras = array_filter([$color, $size]);
+                if (!empty($extras)) {
+                    // eMAG wants the variant parameters in the NAME, comma-separated.
+                    $name = $this->mapper->getName($parent) . ', ' . implode(', ', $extras);
+                }
             }
+            $this->writeCdata('NAME', $name);
+
+            $category = $this->mapper->getCategoryPath($product, $storeId, ' > ');
+            if ($category === '' && $parent) {
+                $category = $this->mapper->getCategoryPath($parent, $storeId, ' > ');
+            }
+            $this->writeCdata('CATEGORY', $category);
+
+            $brand = $this->mapper->getManufacturer($product, $storeId);
+            $this->writeCdata('MANUFACTURER', $brand !== '' ? $brand : 'OEM');
+
+            $this->writeCdata('PRODUCT_URL', $parent ? $this->mapper->getUrl($parent) : $this->mapper->getUrl($product));
+            $this->writeCdata('IMAGE_URL', $image);
+
+            foreach ($this->mapper->getAdditionalImages($product, 10) as $img) {
+                $this->writeCdata('EXTRA_IMAGE_URL', $img);
+            }
+
+            // Price conversion: eMAG wants net price (excluding VAT).
+            $priceInclVat = (float) $this->mapper->getPrice($product);
+            $vatRate = (float) $this->config->getDefaultVatRate($storeId);
+            $priceExclVat = $vatRate > 0 ? $priceInclVat / (1 + $vatRate / 100) : $priceInclVat;
+
+            $this->writeElement('PRICE', number_format($priceExclVat, 2, '.', ''));
+            $this->writeElement('PRICE_SPECIAL', number_format($priceExclVat, 2, '.', ''));
+
+            if ($vatRate > 0) {
+                $this->writeElement('VAT', number_format($vatRate, 0, '.', ''));
+            }
+
+            $stock = $this->mapper->isInStock($product) ? $this->mapper->getStockQty($product) : 0;
+            $this->writeElement('STOCK', (string) max(0, $stock));
+
+            $ean = $this->mapper->getEan($product, $storeId);
+            if ($ean !== '') {
+                $this->writeElement('EAN', $ean);
+            }
+
+            $handlingTime = (string) $this->config->getFeedOption(
+                $this->getCode(),
+                'general/handling_time',
+                $storeId
+            );
+            if ($handlingTime !== '') {
+                $this->writeElement('HANDLING_TIME', $handlingTime);
+            }
+
+            $guarantee = (string) $this->config->getFeedOption(
+                $this->getCode(),
+                'general/guarantee_months',
+                $storeId
+            );
+            if ($guarantee !== '') {
+                $this->writeElement('GUARANTEE', $guarantee);
+            }
+
+            $weight = $this->mapper->getWeightGrams($product, $storeId);
+            if ($weight > 0) {
+                $this->writeElement('WEIGHT', (string) $weight);
+            }
+
+            $description = $this->mapper->getDescription($product, $storeId, 10000);
+            if ($description !== '') {
+                $this->writeCdata('DESCRIPTION', $description);
+            }
+
+        } finally {
+            $this->xml->endElement(); // PRODUCT
         }
-        $this->writeCdata('NAME', $name);
-
-        $category = $this->mapper->getCategoryPath($product, $storeId, ' > ');
-        if ($category === '' && $parent) {
-            $category = $this->mapper->getCategoryPath($parent, $storeId, ' > ');
-        }
-        $this->writeCdata('CATEGORY', $category);
-
-        $brand = $this->mapper->getManufacturer($product, $storeId);
-        $this->writeCdata('MANUFACTURER', $brand !== '' ? $brand : 'OEM');
-
-        $this->writeCdata('PRODUCT_URL', $parent ? $this->mapper->getUrl($parent) : $this->mapper->getUrl($product));
-        $this->writeCdata('IMAGE_URL', $image);
-
-        foreach ($this->mapper->getAdditionalImages($product, 10) as $img) {
-            $this->writeCdata('EXTRA_IMAGE_URL', $img);
-        }
-
-        // Price conversion: eMAG wants net price (excluding VAT).
-        $priceInclVat = (float) $this->mapper->getPrice($product);
-        $vatRate = (float) $this->config->getDefaultVatRate($storeId);
-        $priceExclVat = $vatRate > 0 ? $priceInclVat / (1 + $vatRate / 100) : $priceInclVat;
-
-        $this->writeElement('PRICE', number_format($priceExclVat, 2, '.', ''));
-        $this->writeElement('PRICE_SPECIAL', number_format($priceExclVat, 2, '.', ''));
-
-        if ($vatRate > 0) {
-            $this->writeElement('VAT', number_format($vatRate, 0, '.', ''));
-        }
-
-        $stock = $this->mapper->isInStock($product) ? $this->mapper->getStockQty($product) : 0;
-        $this->writeElement('STOCK', (string) max(0, $stock));
-
-        $ean = $this->mapper->getEan($product, $storeId);
-        if ($ean !== '') {
-            $this->writeElement('EAN', $ean);
-        }
-
-        $handlingTime = (string) $this->config->getFeedOption(
-            $this->getCode(),
-            'general/handling_time',
-            $storeId
-        );
-        if ($handlingTime !== '') {
-            $this->writeElement('HANDLING_TIME', $handlingTime);
-        }
-
-        $guarantee = (string) $this->config->getFeedOption(
-            $this->getCode(),
-            'general/guarantee_months',
-            $storeId
-        );
-        if ($guarantee !== '') {
-            $this->writeElement('GUARANTEE', $guarantee);
-        }
-
-        $weight = $this->mapper->getWeightGrams($product, $storeId);
-        if ($weight > 0) {
-            $this->writeElement('WEIGHT', (string) $weight);
-        }
-
-        $description = $this->mapper->getDescription($product, $storeId, 10000);
-        if ($description !== '') {
-            $this->writeCdata('DESCRIPTION', $description);
-        }
-
-        $this->xml->endElement(); // PRODUCT
     }
 }

@@ -210,54 +210,57 @@ class SkroutzWriter extends AbstractWriter
         $this->seenIds[$id] = true;
 
         $this->xml->startElement('product');
-        $this->writeElement('id', $id);
-        $this->writeCdata('name', (string) ($data['name'] ?? ''));
-        $this->writeCdata('link', (string) ($data['link'] ?? ''));
-        $this->writeCdata('image', $image);
+        try {
+            $this->writeElement('id', $id);
+            $this->writeCdata('name', (string) ($data['name'] ?? ''));
+            $this->writeCdata('link', (string) ($data['link'] ?? ''));
+            $this->writeCdata('image', $image);
 
-        foreach ((array) ($data['additional_images'] ?? []) as $img) {
-            $this->writeCdata('additional_imageurl', $img);
-        }
+            foreach ((array) ($data['additional_images'] ?? []) as $img) {
+                $this->writeCdata('additional_imageurl', $img);
+            }
 
-        $this->writeCdata('category', (string) ($data['category'] ?? ''));
-        $this->writeElement('price_with_vat', (string) ($data['price_with_vat'] ?? '0.00'));
-        $this->writeElement('vat', (string) ($data['vat'] ?? '24.00'));
-        $this->writeCdata('manufacturer', (string) ($data['manufacturer'] ?? 'OEM'));
-        $this->writeCdata('mpn', (string) ($data['mpn'] ?? ''));
-        $this->writeElement('ean', (string) ($data['ean'] ?? ''));
-        $this->writeElement('availability', (string) ($data['availability'] ?? ''));
-        $this->writeElement('size', (string) ($data['size'] ?? ''));
+            $this->writeCdata('category', (string) ($data['category'] ?? ''));
+            $this->writeElement('price_with_vat', (string) ($data['price_with_vat'] ?? '0.00'));
+            $this->writeElement('vat', (string) ($data['vat'] ?? '24.00'));
+            $this->writeCdata('manufacturer', (string) ($data['manufacturer'] ?? 'OEM'));
+            $this->writeCdata('mpn', (string) ($data['mpn'] ?? ''));
+            $this->writeElement('ean', (string) ($data['ean'] ?? ''));
+            $this->writeElement('availability', (string) ($data['availability'] ?? ''));
+            $this->writeElement('size', (string) ($data['size'] ?? ''));
 
-        $weight = (int) ($data['weight'] ?? 0);
-        if ($weight > 0) {
-            $this->writeElement('weight', (string) $weight);
-        }
+            $weight = (int) ($data['weight'] ?? 0);
+            if ($weight > 0) {
+                $this->writeElement('weight', (string) $weight);
+            }
 
-        if (!empty($data['color'])) {
-            $this->writeElement('color', (string) $data['color']);
-        }
+            if (!empty($data['color'])) {
+                $this->writeElement('color', (string) $data['color']);
+            }
 
-        $this->writeCdata('description', (string) ($data['description'] ?? ''));
-        $this->writeElement('quantity', (string) ($data['quantity'] ?? '0'));
+            $this->writeCdata('description', (string) ($data['description'] ?? ''));
+            $this->writeElement('quantity', (string) ($data['quantity'] ?? '0'));
 
-        if (!empty($data['variations'])) {
-            $this->xml->startElement('variations');
-            foreach ($data['variations'] as $v) {
-                $this->xml->startElement('variation');
-                $this->writeElement('variationid', (string) ($v['variationid'] ?? ''));
-                $this->writeElement('availability', (string) ($v['availability'] ?? ''));
-                $this->writeElement('size', (string) ($v['size'] ?? ''));
-                $this->writeElement('quantity', (string) ($v['quantity'] ?? '0'));
-                $this->writeCdata('link', (string) ($v['link'] ?? ''));
-                $this->writeElement('price', (string) ($v['price'] ?? '0.00'));
-                $this->writeCdata('mpn', (string) ($v['mpn'] ?? ''));
-                $this->writeElement('ean', (string) ($v['ean'] ?? ''));
+            if (!empty($data['variations'])) {
+                $this->xml->startElement('variations');
+                foreach ($data['variations'] as $v) {
+                    $this->xml->startElement('variation');
+                    $this->writeElement('variationid', (string) ($v['variationid'] ?? ''));
+                    $this->writeElement('availability', (string) ($v['availability'] ?? ''));
+                    $this->writeElement('size', (string) ($v['size'] ?? ''));
+                    $this->writeElement('quantity', (string) ($v['quantity'] ?? '0'));
+                    $this->writeCdata('link', (string) ($v['link'] ?? ''));
+                    $this->writeElement('price', (string) ($v['price'] ?? '0.00'));
+                    $this->writeCdata('mpn', (string) ($v['mpn'] ?? ''));
+                    $this->writeElement('ean', (string) ($v['ean'] ?? ''));
+                    $this->xml->endElement();
+                }
                 $this->xml->endElement();
             }
-            $this->xml->endElement();
-        }
 
-        $this->xml->endElement(); // product
+        } finally {
+            $this->xml->endElement(); // product
+        }
     }
 
     private function skroutzAvailability(Product $product, int $storeId): string

@@ -93,98 +93,101 @@ class CeneoWriter extends AbstractWriter
     private function writeOffer(Product $product, int $storeId, ?Product $parent): void
     {
         $this->xml->startElement('o');
+        try {
 
-        $id = $this->mapper->getUniqueId($product, $storeId);
-        $url = $parent ? $this->mapper->getUrl($parent) : $this->mapper->getUrl($product);
-        $price = number_format($this->mapper->getPrice($product), 2, '.', '');
-        $avail = $this->ceneoAvailCode($storeId);
-        $stock = $this->mapper->getStockQty($product);
-        $weight = $this->mapper->getWeightGrams($product, $storeId) / 1000;
+            $id = $this->mapper->getUniqueId($product, $storeId);
+            $url = $parent ? $this->mapper->getUrl($parent) : $this->mapper->getUrl($product);
+            $price = number_format($this->mapper->getPrice($product), 2, '.', '');
+            $avail = $this->ceneoAvailCode($storeId);
+            $stock = $this->mapper->getStockQty($product);
+            $weight = $this->mapper->getWeightGrams($product, $storeId) / 1000;
 
-        $this->xml->writeAttribute('id', $id);
-        $this->xml->writeAttribute('url', $url);
-        $this->xml->writeAttribute('price', $price);
-        $this->xml->writeAttribute('avail', (string) $avail);
-        $this->xml->writeAttribute('stock', (string) $stock);
-        if ($weight > 0) {
-            $this->xml->writeAttribute('weight', (string) $weight);
-        }
+            $this->xml->writeAttribute('id', $id);
+            $this->xml->writeAttribute('url', $url);
+            $this->xml->writeAttribute('price', $price);
+            $this->xml->writeAttribute('avail', (string) $avail);
+            $this->xml->writeAttribute('stock', (string) $stock);
+            if ($weight > 0) {
+                $this->xml->writeAttribute('weight', (string) $weight);
+            }
 
-        $basket = $this->config->isFeedFlag($this->getCode(), 'general/basket_enabled', $storeId) ? '1' : '0';
-        $this->xml->writeAttribute('basket', $basket);
+            $basket = $this->config->isFeedFlag($this->getCode(), 'general/basket_enabled', $storeId) ? '1' : '0';
+            $this->xml->writeAttribute('basket', $basket);
 
-        // Category path (Polish uses "/" by convention)
-        $category = $this->mapper->getCategoryPath($product, $storeId, '/');
-        if ($parent && $category === '') {
-            $category = $this->mapper->getCategoryPath($parent, $storeId, '/');
-        }
-        if ($category !== '') {
-            $this->writeCdata('cat', $category);
-        }
+            // Category path (Polish uses "/" by convention)
+            $category = $this->mapper->getCategoryPath($product, $storeId, '/');
+            if ($parent && $category === '') {
+                $category = $this->mapper->getCategoryPath($parent, $storeId, '/');
+            }
+            if ($category !== '') {
+                $this->writeCdata('cat', $category);
+            }
 
-        $name = $parent
-            ? $this->mapper->getName($parent) . ' ' . trim($this->decorateVariant($product, $storeId))
-            : $this->mapper->getName($product);
-        $this->writeCdata('name', trim($name));
+            $name = $parent
+                ? $this->mapper->getName($parent) . ' ' . trim($this->decorateVariant($product, $storeId))
+                : $this->mapper->getName($product);
+            $this->writeCdata('name', trim($name));
 
-        // Images
-        $mainImg = $this->mapper->getImageUrl($product) ?: ($parent ? $this->mapper->getImageUrl($parent) : '');
-        $additional = $this->mapper->getAdditionalImages($product, 9);
-        if ($mainImg !== '' || !empty($additional)) {
-            $this->xml->startElement('imgs');
-            if ($mainImg !== '') {
-                $this->xml->startElement('main');
-                $this->xml->writeAttribute('url', $mainImg);
+            // Images
+            $mainImg = $this->mapper->getImageUrl($product) ?: ($parent ? $this->mapper->getImageUrl($parent) : '');
+            $additional = $this->mapper->getAdditionalImages($product, 9);
+            if ($mainImg !== '' || !empty($additional)) {
+                $this->xml->startElement('imgs');
+                if ($mainImg !== '') {
+                    $this->xml->startElement('main');
+                    $this->xml->writeAttribute('url', $mainImg);
+                    $this->xml->endElement();
+                }
+                foreach ($additional as $img) {
+                    $this->xml->startElement('i');
+                    $this->xml->writeAttribute('url', $img);
+                    $this->xml->endElement();
+                }
                 $this->xml->endElement();
             }
-            foreach ($additional as $img) {
-                $this->xml->startElement('i');
-                $this->xml->writeAttribute('url', $img);
+
+            $description = $this->mapper->getDescription($product, $storeId, 4000);
+            if ($description !== '') {
+                $this->writeCdata('desc', $description);
+            }
+
+            // Attributes
+            $attrs = [];
+            $brand = $this->mapper->getManufacturer($product, $storeId);
+            if ($brand !== 'OEM') {
+                $attrs['Producent'] = $brand;
+            }
+            $mpn = $this->mapper->getMpn($product, $storeId);
+            if ($mpn !== '') {
+                $attrs['Kod_producenta'] = $mpn;
+            }
+            $ean = $this->mapper->getEan($product, $storeId);
+            if ($ean !== '') {
+                $attrs['EAN'] = $ean;
+            }
+            $color = $this->mapper->getColor($product, $storeId);
+            if ($color !== '') {
+                $attrs['Kolor'] = $color;
+            }
+            $size = $this->mapper->getSize($product, $storeId);
+            if ($size !== '') {
+                $attrs['Rozmiar'] = $size;
+            }
+
+            if (!empty($attrs)) {
+                $this->xml->startElement('attrs');
+                foreach ($attrs as $name => $value) {
+                    $this->xml->startElement('a');
+                    $this->xml->writeAttribute('name', $name);
+                    $this->xml->text((string) $value);
+                    $this->xml->endElement();
+                }
                 $this->xml->endElement();
             }
-            $this->xml->endElement();
-        }
 
-        $description = $this->mapper->getDescription($product, $storeId, 4000);
-        if ($description !== '') {
-            $this->writeCdata('desc', $description);
+        } finally {
+            $this->xml->endElement(); // o
         }
-
-        // Attributes
-        $attrs = [];
-        $brand = $this->mapper->getManufacturer($product, $storeId);
-        if ($brand !== 'OEM') {
-            $attrs['Producent'] = $brand;
-        }
-        $mpn = $this->mapper->getMpn($product, $storeId);
-        if ($mpn !== '') {
-            $attrs['Kod_producenta'] = $mpn;
-        }
-        $ean = $this->mapper->getEan($product, $storeId);
-        if ($ean !== '') {
-            $attrs['EAN'] = $ean;
-        }
-        $color = $this->mapper->getColor($product, $storeId);
-        if ($color !== '') {
-            $attrs['Kolor'] = $color;
-        }
-        $size = $this->mapper->getSize($product, $storeId);
-        if ($size !== '') {
-            $attrs['Rozmiar'] = $size;
-        }
-
-        if (!empty($attrs)) {
-            $this->xml->startElement('attrs');
-            foreach ($attrs as $name => $value) {
-                $this->xml->startElement('a');
-                $this->xml->writeAttribute('name', $name);
-                $this->xml->text((string) $value);
-                $this->xml->endElement();
-            }
-            $this->xml->endElement();
-        }
-
-        $this->xml->endElement(); // o
     }
 
     private function ceneoAvailCode(int $storeId): int

@@ -69,73 +69,76 @@ class PricerunnerWriter extends AbstractWriter
     private function writeEntry(Product $product, int $storeId, ?Product $parent): void
     {
         $this->xml->startElement('product');
+        try {
 
-        $id = $this->mapper->getUniqueId($product, $storeId);
-        $name = $parent
-            ? $this->mapper->getName($parent) . ' ' . trim($this->decorateVariant($product, $storeId))
-            : $this->mapper->getName($product);
+            $id = $this->mapper->getUniqueId($product, $storeId);
+            $name = $parent
+                ? $this->mapper->getName($parent) . ' ' . trim($this->decorateVariant($product, $storeId))
+                : $this->mapper->getName($product);
 
-        $this->writeElement('ProductId', $id);
-        $this->writeCdata('ProductName', trim($name));
-        $this->writeElement('price', number_format($this->mapper->getPrice($product), 2, '.', ''));
+            $this->writeElement('ProductId', $id);
+            $this->writeCdata('ProductName', trim($name));
+            $this->writeElement('price', number_format($this->mapper->getPrice($product), 2, '.', ''));
 
-        $shipping = $this->config->getFeedOption($this->getCode(), 'shipping/cost', $storeId);
-        $this->writeElement('ShippingCost', number_format((float) ($shipping ?? '0'), 2, '.', ''));
+            $shipping = $this->config->getFeedOption($this->getCode(), 'shipping/cost', $storeId);
+            $this->writeElement('ShippingCost', number_format((float) ($shipping ?? '0'), 2, '.', ''));
 
-        $qty = $this->mapper->getStockQty($product);
-        $stockMode = $this->config->getFeedOption($this->getCode(), 'general/stock_mode', $storeId) ?: 'enum';
-        if ($stockMode === 'quantity') {
-            $this->writeElement('StockStatus', (string) $qty);
-        } else {
-            $status = $this->mapper->isInStock($product) && $qty > 0 ? 'InStock' : 'OutOfStock';
-            $this->writeElement('StockStatus', $status);
+            $qty = $this->mapper->getStockQty($product);
+            $stockMode = $this->config->getFeedOption($this->getCode(), 'general/stock_mode', $storeId) ?: 'enum';
+            if ($stockMode === 'quantity') {
+                $this->writeElement('StockStatus', (string) $qty);
+            } else {
+                $status = $this->mapper->isInStock($product) && $qty > 0 ? 'InStock' : 'OutOfStock';
+                $this->writeElement('StockStatus', $status);
+            }
+
+            $leadTime = $this->config->getFeedOption($this->getCode(), 'general/lead_time', $storeId) ?: '1-3 days';
+            $this->writeElement('LeadTime', $leadTime);
+
+            $brand = $this->mapper->getManufacturer($product, $storeId);
+            $this->writeCdata('Brand', $brand);
+
+            $mpn = $this->mapper->getMpn($product, $storeId);
+            if ($mpn !== '') {
+                $this->writeCdata('MSku', $mpn);
+            }
+
+            $ean = $this->mapper->getEan($product, $storeId);
+            if ($ean !== '') {
+                $this->writeElement('Ean', $ean);
+            }
+
+            $url = $parent ? $this->mapper->getUrl($parent) : $this->mapper->getUrl($product);
+            $this->writeCdata('Product_URL', $url);
+
+            $image = $this->mapper->getImageUrl($product) ?: ($parent ? $this->mapper->getImageUrl($parent) : '');
+            if ($image !== '') {
+                $this->writeCdata('Image_URL', $image);
+            }
+
+            $description = $this->mapper->getDescription($product, $storeId, 4000);
+            if ($description !== '') {
+                $this->writeCdata('Description', $description);
+            }
+
+            $merchantCategory = $this->mapper->getCategoryPath($product, $storeId, ' > ');
+            if ($merchantCategory !== '') {
+                $this->writeCdata('Category', $merchantCategory);
+            }
+
+            $color = $this->mapper->getColor($product, $storeId);
+            if ($color !== '') {
+                $this->writeCdata('Color', $color);
+            }
+
+            $size = $this->mapper->getSize($product, $storeId);
+            if ($size !== '') {
+                $this->writeCdata('Size', $size);
+            }
+
+        } finally {
+            $this->xml->endElement();
         }
-
-        $leadTime = $this->config->getFeedOption($this->getCode(), 'general/lead_time', $storeId) ?: '1-3 days';
-        $this->writeElement('LeadTime', $leadTime);
-
-        $brand = $this->mapper->getManufacturer($product, $storeId);
-        $this->writeCdata('Brand', $brand);
-
-        $mpn = $this->mapper->getMpn($product, $storeId);
-        if ($mpn !== '') {
-            $this->writeCdata('MSku', $mpn);
-        }
-
-        $ean = $this->mapper->getEan($product, $storeId);
-        if ($ean !== '') {
-            $this->writeElement('Ean', $ean);
-        }
-
-        $url = $parent ? $this->mapper->getUrl($parent) : $this->mapper->getUrl($product);
-        $this->writeCdata('Product_URL', $url);
-
-        $image = $this->mapper->getImageUrl($product) ?: ($parent ? $this->mapper->getImageUrl($parent) : '');
-        if ($image !== '') {
-            $this->writeCdata('Image_URL', $image);
-        }
-
-        $description = $this->mapper->getDescription($product, $storeId, 4000);
-        if ($description !== '') {
-            $this->writeCdata('Description', $description);
-        }
-
-        $merchantCategory = $this->mapper->getCategoryPath($product, $storeId, ' > ');
-        if ($merchantCategory !== '') {
-            $this->writeCdata('Category', $merchantCategory);
-        }
-
-        $color = $this->mapper->getColor($product, $storeId);
-        if ($color !== '') {
-            $this->writeCdata('Color', $color);
-        }
-
-        $size = $this->mapper->getSize($product, $storeId);
-        if ($size !== '') {
-            $this->writeCdata('Size', $size);
-        }
-
-        $this->xml->endElement();
     }
 
     private function decorateVariant(Product $variant, int $storeId): string

@@ -91,109 +91,112 @@ class GoogleShoppingWriter extends AbstractWriter
         ?string $itemGroupId = null
     ): void {
         $this->xml->startElement('item');
+        try {
 
-        $id = $this->mapper->getUniqueId($product, $storeId);
-        $name = mb_substr($this->mapper->getName($product), 0, 150);
-        $link = $parent ? $this->mapper->getUrl($parent) : $this->mapper->getUrl($product);
-        $image = $this->mapper->getImageUrl($product) ?: ($parent ? $this->mapper->getImageUrl($parent) : '');
-        $description = $this->mapper->getDescription($product, $storeId, 5000);
+            $id = $this->mapper->getUniqueId($product, $storeId);
+            $name = mb_substr($this->mapper->getName($product), 0, 150);
+            $link = $parent ? $this->mapper->getUrl($parent) : $this->mapper->getUrl($product);
+            $image = $this->mapper->getImageUrl($product) ?: ($parent ? $this->mapper->getImageUrl($parent) : '');
+            $description = $this->mapper->getDescription($product, $storeId, 5000);
 
-        $this->writeElement('g:id', $id);
-        $this->writeCdata('g:title', $name);
-        $this->writeCdata('g:description', $description);
-        $this->writeElement('g:link', $link);
-        $this->writeElement('g:image_link', $image);
+            $this->writeElement('g:id', $id);
+            $this->writeCdata('g:title', $name);
+            $this->writeCdata('g:description', $description);
+            $this->writeElement('g:link', $link);
+            $this->writeElement('g:image_link', $image);
 
-        foreach ($this->mapper->getAdditionalImages($product, 10) as $img) {
-            $this->writeElement('g:additional_image_link', $img);
-        }
-
-        $this->writeElement('g:availability', $this->googleAvailability($product));
-        $this->writeElement('g:condition', $this->condition($storeId));
-
-        $currency = $this->getCurrencyCode($storeId);
-        $price = number_format($this->mapper->getPrice($product), 2, '.', '');
-        $this->writeElement('g:price', $price . ' ' . $currency);
-
-        $specialPrice = $this->mapper->getSpecialPrice($product);
-        if ($specialPrice !== null) {
-            $this->writeElement('g:sale_price', number_format($specialPrice, 2, '.', '') . ' ' . $currency);
-        }
-
-        $brand = $this->mapper->getManufacturer($product, $storeId);
-        $mpn = $this->mapper->getMpn($product, $storeId);
-        $ean = $this->mapper->getEan($product, $storeId);
-
-        if ($brand !== '' && $brand !== 'OEM') {
-            $this->writeCdata('g:brand', $brand);
-        }
-        if ($ean !== '' && $this->isValidGtin($ean)) {
-            $this->writeElement('g:gtin', $ean);
-        }
-        if ($mpn !== '') {
-            $this->writeCdata('g:mpn', $mpn);
-        }
-
-        // identifier_exists=no only when no brand + no GTIN + no MPN
-        if (($brand === '' || $brand === 'OEM') && $ean === '' && $mpn === '') {
-            $this->writeElement('g:identifier_exists', 'no');
-        }
-
-        $googleCategory = $this->config->getFeedOption($this->getCode(), 'taxonomy/default_google_category', $storeId);
-        if ($googleCategory) {
-            $this->writeCdata('g:google_product_category', $googleCategory);
-        }
-
-        $productType = $this->mapper->getCategoryPath($product, $storeId, ' > ');
-        if ($productType !== '') {
-            $this->writeCdata('g:product_type', mb_substr($productType, 0, 750));
-        }
-
-        if ($itemGroupId) {
-            $this->writeElement('g:item_group_id', $itemGroupId);
-        }
-
-        $color = $this->mapper->getColor($product, $storeId);
-        if ($color !== '') {
-            $this->writeCdata('g:color', mb_substr($color, 0, 100));
-        }
-
-        $size = $this->mapper->getSize($product, $storeId);
-        if ($size !== '') {
-            $this->writeCdata('g:size', mb_substr($size, 0, 100));
-        }
-
-        $gender = $this->config->getFeedOption($this->getCode(), 'apparel/default_gender', $storeId);
-        if ($gender) {
-            $this->writeElement('g:gender', $gender);
-        }
-        $ageGroup = $this->config->getFeedOption($this->getCode(), 'apparel/default_age_group', $storeId);
-        if ($ageGroup) {
-            $this->writeElement('g:age_group', $ageGroup);
-        }
-
-        $weight = $this->mapper->getWeightGrams($product, $storeId);
-        if ($weight > 0) {
-            $this->writeElement('g:shipping_weight', ($weight / 1000) . ' kg');
-        }
-
-        $shippingCountry = $this->config->getFeedOption($this->getCode(), 'shipping/country', $storeId);
-        $shippingPrice = $this->config->getFeedOption($this->getCode(), 'shipping/price', $storeId);
-        if ($shippingCountry && $shippingPrice !== null) {
-            $this->xml->startElement('g:shipping');
-            $this->writeElement('g:country', $shippingCountry);
-            $service = $this->config->getFeedOption($this->getCode(), 'shipping/service', $storeId);
-            if ($service) {
-                $this->writeElement('g:service', $service);
+            foreach ($this->mapper->getAdditionalImages($product, 10) as $img) {
+                $this->writeElement('g:additional_image_link', $img);
             }
-            $this->writeElement('g:price', number_format((float) $shippingPrice, 2, '.', '') . ' ' . $currency);
-            $this->xml->endElement();
+
+            $this->writeElement('g:availability', $this->googleAvailability($product));
+            $this->writeElement('g:condition', $this->condition($storeId));
+
+            $currency = $this->getCurrencyCode($storeId);
+            $price = number_format($this->mapper->getPrice($product), 2, '.', '');
+            $this->writeElement('g:price', $price . ' ' . $currency);
+
+            $specialPrice = $this->mapper->getSpecialPrice($product);
+            if ($specialPrice !== null) {
+                $this->writeElement('g:sale_price', number_format($specialPrice, 2, '.', '') . ' ' . $currency);
+            }
+
+            $brand = $this->mapper->getManufacturer($product, $storeId);
+            $mpn = $this->mapper->getMpn($product, $storeId);
+            $ean = $this->mapper->getEan($product, $storeId);
+
+            if ($brand !== '' && $brand !== 'OEM') {
+                $this->writeCdata('g:brand', $brand);
+            }
+            if ($ean !== '' && $this->isValidGtin($ean)) {
+                $this->writeElement('g:gtin', $ean);
+            }
+            if ($mpn !== '') {
+                $this->writeCdata('g:mpn', $mpn);
+            }
+
+            // identifier_exists=no only when no brand + no GTIN + no MPN
+            if (($brand === '' || $brand === 'OEM') && $ean === '' && $mpn === '') {
+                $this->writeElement('g:identifier_exists', 'no');
+            }
+
+            $googleCategory = $this->config->getFeedOption($this->getCode(), 'taxonomy/default_google_category', $storeId);
+            if ($googleCategory) {
+                $this->writeCdata('g:google_product_category', $googleCategory);
+            }
+
+            $productType = $this->mapper->getCategoryPath($product, $storeId, ' > ');
+            if ($productType !== '') {
+                $this->writeCdata('g:product_type', mb_substr($productType, 0, 750));
+            }
+
+            if ($itemGroupId) {
+                $this->writeElement('g:item_group_id', $itemGroupId);
+            }
+
+            $color = $this->mapper->getColor($product, $storeId);
+            if ($color !== '') {
+                $this->writeCdata('g:color', mb_substr($color, 0, 100));
+            }
+
+            $size = $this->mapper->getSize($product, $storeId);
+            if ($size !== '') {
+                $this->writeCdata('g:size', mb_substr($size, 0, 100));
+            }
+
+            $gender = $this->config->getFeedOption($this->getCode(), 'apparel/default_gender', $storeId);
+            if ($gender) {
+                $this->writeElement('g:gender', $gender);
+            }
+            $ageGroup = $this->config->getFeedOption($this->getCode(), 'apparel/default_age_group', $storeId);
+            if ($ageGroup) {
+                $this->writeElement('g:age_group', $ageGroup);
+            }
+
+            $weight = $this->mapper->getWeightGrams($product, $storeId);
+            if ($weight > 0) {
+                $this->writeElement('g:shipping_weight', ($weight / 1000) . ' kg');
+            }
+
+            $shippingCountry = $this->config->getFeedOption($this->getCode(), 'shipping/country', $storeId);
+            $shippingPrice = $this->config->getFeedOption($this->getCode(), 'shipping/price', $storeId);
+            if ($shippingCountry && $shippingPrice !== null) {
+                $this->xml->startElement('g:shipping');
+                $this->writeElement('g:country', $shippingCountry);
+                $service = $this->config->getFeedOption($this->getCode(), 'shipping/service', $storeId);
+                if ($service) {
+                    $this->writeElement('g:service', $service);
+                }
+                $this->writeElement('g:price', number_format((float) $shippingPrice, 2, '.', '') . ' ' . $currency);
+                $this->xml->endElement();
+            }
+
+            // Hook for subclasses (Facebook) to add extra tags
+            $this->afterItemTags($product, $storeId, $parent, $itemGroupId);
+
+        } finally {
+            $this->xml->endElement(); // item
         }
-
-        // Hook for subclasses (Facebook) to add extra tags
-        $this->afterItemTags($product, $storeId, $parent, $itemGroupId);
-
-        $this->xml->endElement(); // item
     }
 
     /**
