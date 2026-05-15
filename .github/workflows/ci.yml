@@ -26,7 +26,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          tools: composer:v2, cs2pr
+          tools: composer:v2
           coverage: none
           ini-values: memory_limit=512M
 
@@ -36,13 +36,11 @@ jobs:
       - name: PHP syntax check
         run: find . -path ./vendor -prune -o -name "*.php" -print0 | xargs -0 -n1 -P4 php -l > /dev/null
 
-      - name: Allow phpcodesniffer-composer-installer plugin
+      - name: Allow phpcs composer plugin
         run: composer global config --no-plugins allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
 
       - name: Install Magento Coding Standard
         run: composer global require --no-progress --no-interaction magento/magento-coding-standard:^32
 
       - name: Run phpcs (Magento Coding Standard)
-        run: |
-          PHPCS_BIN="$HOME/.composer/vendor/bin/phpcs"
-          "$PHPCS_BIN" --standard=Magento2 --severity=8 --extensions=php,phtml --report=checkstyle . | cs2pr
+        run: "$HOME/.composer/vendor/bin/phpcs" --standard=Magento2 --severity=8 --extensions=php,phtml -q .
