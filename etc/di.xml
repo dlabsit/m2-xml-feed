@@ -55,9 +55,9 @@
                     <item name="code" xsi:type="string">xmlfeed</item>
                     <item name="name" xsi:type="string">XML Feed (11 platforms)</item>
                     <item name="description" xsi:type="string">Pluggable XML product feed generator. Supports Skroutz, Google Shopping, Facebook/Meta Catalog, Bing, Bestprice.gr, Pricerunner, Idealo, Ceneo.pl, Kelkoo, Shopflix.gr, and eMAG Marketplace.</item>
-                    <item name="version" xsi:type="string">2.2.0</item>
+                    <item name="version" xsi:type="string">0.1.1</item>
                     <item name="composer_name" xsi:type="string">dlabsit/module-xml-feed</item>
-                    <item name="license_tier" xsi:type="string">free_os_paid_commerce</item>
+                    <item name="license_tier" xsi:type="string">free</item>
                     <item name="min_php_version" xsi:type="string">8.2</item>
                     <item name="min_magento_version" xsi:type="string">2.4.7</item>
                     <item name="repository_url" xsi:type="string">https://github.com/dlabsit/m2-xml-feed</item>
