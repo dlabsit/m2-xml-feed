@@ -160,7 +160,7 @@ class EmagWriter extends AbstractWriter
                 $this->writeElement('GUARANTEE', $guarantee);
             }
 
-            $weight = $this->mapper->getWeightGrams($product, $storeId);
+            $weight = $this->resolveWeightGrams($product, null, $storeId);
             if ($weight > 0) {
                 $this->writeElement('WEIGHT', (string) $weight);
             }

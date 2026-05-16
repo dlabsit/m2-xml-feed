@@ -173,9 +173,10 @@ class GoogleShoppingWriter extends AbstractWriter
                 $this->writeElement('g:age_group', $ageGroup);
             }
 
-            $weight = $this->mapper->getWeightGrams($product, $storeId);
+            $weight = $this->resolveWeightGrams($product, $parent, $storeId);
             if ($weight > 0) {
                 $this->writeElement('g:shipping_weight', ($weight / 1000) . ' kg');
+                $this->writeElement('g:product_weight', ($weight / 1000) . ' kg');
             }
 
             $shippingCountry = $this->config->getFeedOption($this->getCode(), 'shipping/country', $storeId);

@@ -145,7 +145,7 @@ class ShopflixWriter extends AbstractWriter
                 $this->writeCdata('SIZE', $size);
             }
 
-            $weight = $this->mapper->getWeightGrams($product, $storeId);
+            $weight = $this->resolveWeightGrams($product, null, $storeId);
             if ($weight > 0) {
                 $this->writeElement('WEIGHT', (string) $weight);
             }

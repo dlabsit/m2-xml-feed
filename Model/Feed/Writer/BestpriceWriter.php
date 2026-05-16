@@ -147,7 +147,7 @@ class BestpriceWriter extends AbstractWriter
                 $this->writeCdata('size', $size);
             }
 
-            $weight = $this->mapper->getWeightGrams($product, $storeId);
+            $weight = $this->resolveWeightGrams($product, null, $storeId);
             if ($weight > 0) {
                 $this->writeElement('weight', (string) $weight);
             }

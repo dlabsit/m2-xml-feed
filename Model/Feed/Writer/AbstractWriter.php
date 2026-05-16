@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace Dlabsit\XmlFeed\Model\Feed\Writer;
 
+use Dlabsit\XmlFeed\Api\Data\FeedInterface;
 use Dlabsit\XmlFeed\Api\FeedWriterInterface;
 use Dlabsit\XmlFeed\Helper\Config;
 use Dlabsit\XmlFeed\Logger\Logger;
@@ -18,6 +19,9 @@ use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
 abstract class AbstractWriter implements FeedWriterInterface
 {
     protected \XMLWriter $xml;
+
+    /** @var FeedInterface|null Current feed being written, set by Generator before write() */
+    protected ?FeedInterface $currentFeed = null;
 
     public function __construct(
         protected readonly Config $config,
@@ -49,6 +53,52 @@ abstract class AbstractWriter implements FeedWriterInterface
         foreach ($children as $child) {
             $this->writeSimpleProduct($child, $storeId);
         }
+    }
+
+    /**
+     * Resolve product weight in grams with fallbacks for variant rows and
+     * empty weight attributes. Order of preference:
+     *   1. Product's own weight attribute
+     *   2. Parent (configurable) weight, if a parent is provided
+     *   3. Per-feed default_weight_kg from channel_settings
+     */
+    protected function resolveWeightGrams(
+        \Magento\Catalog\Model\Product $product,
+        ?\Magento\Catalog\Model\Product $parent,
+        int $storeId
+    ): int {
+        $weight = $this->mapper->getWeightGrams($product, $storeId);
+        if ($weight === 0 && $parent !== null) {
+            $weight = $this->mapper->getWeightGrams($parent, $storeId);
+        }
+        if ($weight === 0) {
+            $default = (float) $this->getFeedSetting('default_weight_kg', 0);
+            if ($default > 0) {
+                $weight = (int) ($default * 1000);
+            }
+        }
+        return $weight;
+    }
+
+    public function setCurrentFeed(?FeedInterface $feed): void
+    {
+        $this->currentFeed = $feed;
+    }
+
+    /**
+     * Read a value from the current feed's channel_settings JSON, falling
+     * back to the supplied default. Used by per-feed overrides like vat_rate
+     * or default_weight_kg.
+     */
+    protected function getFeedSetting(string $key, mixed $default = null): mixed
+    {
+        if ($this->currentFeed === null) {
+            return $default;
+        }
+        $settings = $this->currentFeed->getChannelSettings();
+        return array_key_exists($key, $settings) && $settings[$key] !== '' && $settings[$key] !== null
+            ? $settings[$key]
+            : $default;
     }
 
     public function write(string $filePath, \Generator $productSource, int $storeId): void

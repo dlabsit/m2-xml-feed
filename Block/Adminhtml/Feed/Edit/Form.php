@@ -65,7 +65,7 @@ class Form extends Generic
             'label' => __('URL Slug'),
             'title' => __('URL Slug'),
             'required' => true,
-            'note' => __('Served at /feed/&lt;slug&gt;. Use a-z, 0-9 and dashes only (e.g. google-adult).'),
+            'note' => __('Served at /feed/&lt;slug&gt;. Use a-z, 0-9 and dashes only (e.g. google-main).'),
         ]);
 
         $fieldset->addField('channel_code', 'select', [
@@ -133,7 +133,7 @@ class Form extends Generic
             'label' => __('Settings (JSON)'),
             'title' => __('Settings (JSON)'),
             'note' => __(
-                'Channel-specific overrides as JSON, e.g. {"general/store_name":"My Shop","shipping/country":"GR","shipping/price":"3.50"}. '
+                'Channel-specific overrides as JSON. Common keys: <code>vat_rate</code> (per-feed VAT, used by Skroutz/Bestprice), <code>default_weight_kg</code> (fallback when product weight is empty). Example: <code>{"vat_rate":21.00,"default_weight_kg":0.5,"general/store_name":"My Shop","shipping/country":"NL","shipping/price":"3.95"}</code>. '
                 . 'Keys use <em>group/field</em> format matching the legacy config paths.'
             ),
             'style' => 'height: 240px; font-family: monospace;',
