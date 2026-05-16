@@ -100,7 +100,7 @@ class CeneoWriter extends AbstractWriter
             $price = number_format($this->mapper->getPrice($product), 2, '.', '');
             $avail = $this->ceneoAvailCode($storeId);
             $stock = $this->mapper->getStockQty($product);
-            $weight = $this->mapper->getWeightGrams($product, $storeId) / 1000;
+            $weight = $this->resolveWeightGrams($product, null, $storeId) / 1000;
 
             $this->xml->writeAttribute('id', $id);
             $this->xml->writeAttribute('url', $url);

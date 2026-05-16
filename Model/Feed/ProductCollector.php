@@ -154,6 +154,7 @@ class ProductCollector
             $this->config->getEanAttribute($storeId),
             $this->config->getColorAttribute($storeId),
             $this->config->getSizeAttribute($storeId),
+            $this->config->getWeightAttribute($storeId),
         ]);
 
         $collection->addAttributeToFilter('status', Status::STATUS_ENABLED);

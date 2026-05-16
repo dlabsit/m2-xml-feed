@@ -108,6 +108,7 @@ class Generator implements FeedGeneratorInterface
 
         $this->storeManager->setCurrentStore($storeId);
         $writer = $this->writerPool->get($channel);
+        $writer->setCurrentFeed($feed);
 
         $mediaDir = $this->filesystem->getDirectoryWrite(DirectoryList::MEDIA);
         $mediaDir->create('xmlfeed');
