@@ -30,12 +30,36 @@ class AttributeMapper
     ) {
     }
 
+
+    /**
+     * Safely read a scalar value from a product attribute. Returns '' when
+     * the attribute code is empty (so $product->getData('') does not blow
+     * up the whole _data array into a string) or when the resolved value is
+     * an array (cast to comma-joined string instead of triggering a PHP
+     * Array-to-string warning, which Magento promotes to an exception in
+     * production CLI mode).
+     */
+    private function readScalarAttr(\Magento\Catalog\Model\Product $product, string $attrCode): string
+    {
+        if ($attrCode === '') {
+            return '';
+        }
+        $value = $product->getData($attrCode);
+        if ($value === null) {
+            return '';
+        }
+        if (is_array($value)) {
+            return implode(',', array_filter($value, static fn ($v) => $v !== null && $v !== ''));
+        }
+        return (string) $value;
+    }
+
     public function getUniqueId(Product $product, int $storeId): string
     {
         $source = $this->config->getUniqueIdSource($storeId);
         return match ($source) {
             'sku' => (string) $product->getSku(),
-            'custom' => (string) $product->getData($this->config->getCustomAttributeCode($storeId)),
+            'custom' => $this->readScalarAttr($product, $this->config->getCustomAttributeCode($storeId)),
             default => (string) $product->getId(),
         };
     }
@@ -217,18 +241,18 @@ class AttributeMapper
 
     public function getMpn(Product $product, int $storeId): string
     {
-        return (string) $product->getData($this->config->getMpnAttribute($storeId));
+        return $this->readScalarAttr($product, $this->config->getMpnAttribute($storeId));
     }
 
     public function getEan(Product $product, int $storeId): string
     {
-        return (string) $product->getData($this->config->getEanAttribute($storeId));
+        return $this->readScalarAttr($product, $this->config->getEanAttribute($storeId));
     }
 
     public function getDescription(Product $product, int $storeId, int $maxLength = 5000): string
     {
         $source = $this->config->getDescriptionSource($storeId);
-        $value = (string) $product->getData($source);
+        $value = $this->readScalarAttr($product, $source);
         $value = strip_tags($value);
         $value = preg_replace('/\s+/', ' ', $value);
         $value = trim($value);
@@ -241,7 +265,7 @@ class AttributeMapper
     public function getRawDescription(Product $product, int $storeId): string
     {
         $source = $this->config->getDescriptionSource($storeId);
-        return (string) $product->getData($source);
+        return $this->readScalarAttr($product, $source);
     }
 
     public function getColor(Product $product, int $storeId): string
