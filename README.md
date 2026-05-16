@@ -102,11 +102,13 @@ Every feed lives in the `dlabsit_xmlfeed_feed` table as a row. The Generator pic
 
 ```bash
 composer require dlabsit/module-xml-feed
-bin/magento module:enable Dlabsit_XmlFeed
+bin/magento module:enable Dlabsit_Core Dlabsit_XmlFeed
 bin/magento setup:upgrade
 bin/magento setup:di:compile
 bin/magento cache:flush
 ```
+
+`dlabsit/module-core` is a required dependency and Composer pulls it in automatically. Both modules must be enabled together: Core provides the shared admin tab, module registry, and compatibility helper that XML Feed reads from.
 
 Setup patches will:
 
