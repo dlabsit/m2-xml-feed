@@ -269,7 +269,21 @@ class AttributeMapper
         $attrCode = $this->config->getWeightAttribute($storeId);
         $w = (float) $product->getData($attrCode);
         if ($w <= 0) {
-            return 0;
+            // ProductCollector's addAttributeToSelect does not always populate
+            // the value on yielded products; fall back to a direct EAV read.
+            try {
+                $raw = $product->getResource()->getAttributeRawValue(
+                    (int) $product->getId(),
+                    $attrCode,
+                    $storeId
+                );
+                $w = (float) (is_array($raw) ? ($raw[$attrCode] ?? 0) : $raw);
+            } catch (\Exception $e) {
+                return 0;
+            }
+            if ($w <= 0) {
+                return 0;
+            }
         }
         return (int) ($w * 1000);
     }
