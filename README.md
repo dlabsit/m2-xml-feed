@@ -28,6 +28,11 @@ One module, one feed registry, one extension point to add more.
 > This module has not yet been validated against a wide range of Magento installs, catalog shapes, or production traffic. Generated feed output has not been independently verified against every platform's spec.
 >
 > Do **not** rely on it as the sole feed source for a production store without your own testing first. Verify each generated feed against the target platform's validator before going live, monitor it on the first few cron runs, and keep your previous feed solution as a fallback during evaluation. Bug reports through [GitHub Issues](https://github.com/dlabsit/m2-xml-feed/issues) are very welcome.
+>
+> > [!DANGEROUS]
+> **This module is made by AI**
+>
+> This module has been made using AI - Anthropic Claude Code
 
 ## Table of contents
 
